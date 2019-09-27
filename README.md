@@ -24,4 +24,4 @@ interested in contributing, please feel free to submit a pull request.
 # Developing
 To build it, first install nim using `brew install nim`.  To build it, run `./build.sh`.
 This will compile the tool as well as repackage the Finder Quick Action with the new
-version.  To see more details about command line options, run `./shuffle_recording --help`.
+version.  To see more details about command line options, run `./bin/shuffle_recording --help`.
