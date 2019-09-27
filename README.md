@@ -19,7 +19,7 @@ challenging recording.
 While this tool is packaged for MacOS as a convenient Finder Quick Action, the core
 is written using [nim](https://nim-lang.org), a cross-platform programming language.
 This means that it's quite possible to use it on other platforms as well.  If you're
-interested in contributing, please let me know.
+interested in contributing, please feel free to submit a pull request.
 
 # Developing
 To build it, first install nim using `brew install nim`.  To build it, run `./build.sh`.
