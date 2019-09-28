@@ -76,6 +76,17 @@ proc removeFiles(files: seq[string]) =
   for file in files:
     removeFile(file)
 
+proc getNewFilename(dir: string, name: string, ext: string): string =
+  ## Return a new file name with an added number (if needed) to ensure that it doesn't exist.
+  var new = joinPath(dir, name & ext)
+  var count = 2
+
+  while fileExists(new):
+    new = joinPath(dir, name & " (" & $count & ")" & ext)
+    count = count + 1
+
+  return new
+
 proc process(file: string, repeatTimes: int, silenceSecs: float): string =
   ## Process an individual file.
   let (dir, name, ext) = splitFile(file)
@@ -103,13 +114,9 @@ proc process(file: string, repeatTimes: int, silenceSecs: float): string =
     let forDisplay = join(group.mapIt(it + 1), ",")
     styledEcho(fmt"    {forDisplay}")
 
-  let backupFile = joinPath(dir, name & " (backup)" & ext)
+  let newFilename = getNewFilename(dir, name & " (" & $repeatTimes & " repeats)", ext)
 
-  discard tryRemoveFile(backupFile)
-  copyFile(file, backupFile)
-  removeFile(file)
-
-  discard joinFiles(randomizedFiles, file)
+  discard joinFiles(randomizedFiles, newFilename)
 
   removeFiles(randomizedFiles)
 
