@@ -30,7 +30,7 @@ language.  This means that it's quite possible to use it on other platforms as
 well.  If you're interested in contributing, please feel free to submit a pull
 request.
 
-To build it, first install nim using `brew install nim`.  To build it, run
+To build it, first install nim using `brew install nim`.  Then run
 `./build.sh`.  This will compile the tool as well as repackage the Finder Quick
 Action with the new version.  To see more details about command line options,
 run `./bin/shuffle_recording --help`.
