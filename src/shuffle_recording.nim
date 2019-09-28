@@ -95,7 +95,7 @@ proc process(file: string, repeatTimes: int, silenceSecs: float): string =
   var segmentFiles: seq[string]
 
   for segment in segments:
-    let segmentFile = joinPath(dir, name & "-" & $index & ext)
+    let segmentFile = joinPath(getTempDir(), name & "-" & $index & ext)
 
     styledEcho(fmt"  segment {index}: {segment.startTime:.2f}s - {segment.endTime:.2f}s")
 
