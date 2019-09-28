@@ -26,10 +26,10 @@ useful if you want to do more advanced scripting.
 ## Development
 While this tool is packaged for MacOS as a convenient Finder Quick Action, the
 core is written using [nim](https://nim-lang.org), a cross-platform programming
-language.  Under the hood, it uses ffmpeg to find the segments separated by
-silence and to create the new file.  This means that it's quite possible to use
-it on other platforms as well.  If you're interested in contributing, please feel
-free to submit a pull request.
+language.  Under the hood, it uses [ffmpeg](https://www.ffmpeg.org/) to find the
+segments separated by silence and to create the new file.  This means that it's
+quite possible to use it on other platforms as well.  If you're interested in
+contributing, please feel free to submit a pull request.
 
 To build it, first install nim using `brew install nim`.  Then run
 `./build.sh`.  This will compile the tool as well as repackage the Finder Quick
