@@ -5,6 +5,7 @@ import random
 import sequtils
 import strformat
 import strutils
+import tempfile
 import terminal
 
 type Segment* = object
@@ -95,7 +96,8 @@ proc process(file: string, repeatTimes: int, silenceSecs: float): string =
   var segmentFiles: seq[string]
 
   for segment in segments:
-    let segmentFile = joinPath(getTempDir(), name & "-" & $index & ext)
+    var (fp, segmentFile) = mkstemp()
+    fp.close()
 
     styledEcho(fmt"  segment {index}: {segment.startTime:.2f}s - {segment.endTime:.2f}s")
 

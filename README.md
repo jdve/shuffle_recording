@@ -1,4 +1,4 @@
-# shuffle_recording
+# Shuffle Recording
 When using an audio recording for learning drills (e.g., language sessions), it
 is often helpful to listen to the recordings out-of-order to better engage with
 the material.  This tool finds the segments of an audio file by locating the

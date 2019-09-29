@@ -8,5 +8,5 @@ srcDir        = "src"
 bin           = @["shuffle_recording"]
 
 # Dependencies
-requires "nim >= 0.20.2", "cligen >= 0.9.38"
+requires "nim >= 0.20.2", "cligen >= 0.9.38", "tempfile >= 0.1.7"
 
