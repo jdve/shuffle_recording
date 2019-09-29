@@ -12,19 +12,28 @@ type Segment* = object
   startTime: float
   endTime: float
 
-let ffmpeg = joinPath(getAppDir(), "ffmpeg")
+proc error(msg: string) =
+  styledWriteLine(stderr, fgRed, "Error: ", resetStyle, msg)
+
+proc ffmpeg(args: varargs[string]): string =
+  let cmd = findExe("ffmpeg")
+
+  if cmd == "":
+    error("Can't find ffmpeg in the current directory or in your PATH.  Please install it and try again.")
+    quit(QuitFailure)
+
+  return execProcess(cmd, args=args, options={poStdErrToStdOut})
 
 proc locateSegments(file: string, silenceSecs: float): seq[Segment] =
   ## Locate segments of audio separated by silence.
-  let output = execProcess(ffmpeg, args=[
+  let output = ffmpeg(
     "-i",
     file,
     "-af",
     "silencedetect=noise=-30dB:d=" & $silenceSecs,
     "-f",
     "null",
-    "-"
-  ], options={poUsePath, poStdErrToStdOut})
+    "-")
 
   let pattern = re"(?s)silence_start: ([\d.]+).*?silence_end: ([\d.]+)"
 
@@ -44,33 +53,24 @@ proc locateSegments(file: string, silenceSecs: float): seq[Segment] =
 
 proc extractSegment(file: string, outputAudioFile: string, segment: Segment): string =
   ## Extract a segment out of an audio file.
-  return execProcess(ffmpeg, args=[
+  return ffmpeg(
     "-ss", $segment.startTime,
     "-t", $(segment.endTime - segment.startTime),
     "-i", file,
     "-codec", "copy",
-    "-y", outputAudioFile
-  ], options={poUsePath, poStdErrToStdOut})
+    "-y", outputAudioFile)
 
 proc joinFiles(inputFiles: seq[string], outputFile: string): string =
   ## Concatenate a bunch of audio files together.
-  return execProcess(ffmpeg, args=[
+  return ffmpeg(
     "-i", "concat:" & join(inputFiles, "|"),
     "-codec", "copy",
-    "-y", outputFile
-  ], options={poUsePath, poStdErrToStdOut})
+    "-y", outputFile)
 
 proc randomToMax(max: int): seq[int] =
   ## Return a list of numbers from 0 to max - 1 in random order.
   result = toSeq(0..<max)
   shuffle(result)
-
-proc randomizeAndRepeatSeq(strings: seq[string], repeatTimes: int): seq[string] =
-  ## Return a new sequence where the given sequence is repeatedly randomized.
-  for i in countup(1, repeatTimes):
-    var shuffled = strings
-    shuffle(shuffled)
-    result.add(shuffled)
 
 proc removeFiles(files: seq[string]) =
   ## Remove a list of files.
