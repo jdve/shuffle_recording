@@ -1,3 +1,5 @@
+import files
+import ffmpeg
 import nre
 import os
 import osproc
@@ -11,18 +13,6 @@ import terminal
 type Segment* = object
   startTime: float
   endTime: float
-
-proc error(msg: string) =
-  styledWriteLine(stderr, fgRed, "Error: ", resetStyle, msg)
-
-proc ffmpeg(args: varargs[string]): string =
-  let cmd = findExe("ffmpeg")
-
-  if cmd == "":
-    error("Can't find ffmpeg in the current directory or in your PATH.  Please install it and try again.")
-    quit(QuitFailure)
-
-  return execProcess(cmd, args=args, options={poStdErrToStdOut})
 
 proc locateSegments(file: string, silenceSecs: float): seq[Segment] =
   ## Locate segments of audio separated by silence.
@@ -72,22 +62,6 @@ proc randomToMax(max: int): seq[int] =
   result = toSeq(0..<max)
   shuffle(result)
 
-proc removeFiles(files: seq[string]) =
-  ## Remove a list of files.
-  for file in files:
-    removeFile(file)
-
-proc getNewFilename(dir: string, name: string, ext: string): string =
-  ## Return a new file name with an added number (if needed) to ensure that it doesn't exist.
-  var new = joinPath(dir, name & ext)
-  var count = 2
-
-  while fileExists(new):
-    new = joinPath(dir, name & " (" & $count & ")" & ext)
-    count = count + 1
-
-  return new
-
 proc process(file: string, repeatTimes: int, silenceSecs: float): string =
   ## Process an individual file.
   let (dir, name, ext) = splitFile(file)
@@ -116,7 +90,7 @@ proc process(file: string, repeatTimes: int, silenceSecs: float): string =
     let forDisplay = join(group.mapIt(it + 1), ",")
     styledEcho(fmt"    {forDisplay}")
 
-  let newFilename = getNewFilename(dir, name & " (" & $repeatTimes & " repeats)", ext)
+  let newFilename = getUniqueFile(dir, name & " (" & $repeatTimes & " repeats)", ext)
 
   discard joinFiles(randomizedFiles, newFilename)
 
