@@ -8,6 +8,8 @@ import strformat
 import strutils
 import terminal
 
+import std/exitprocs
+
 type Segment* = object
   startTime: float
   endTime: float
@@ -101,7 +103,7 @@ proc main(files: seq[string], repeatTimes: int = 3, silenceSecs: float = 1.0) =
 when isMainModule:
   randomize()
 
-  system.addQuitProc(resetAttributes)
+  exitprocs.addExitProc(resetAttributes)
 
   import cligen
   dispatch(main, "shuffle_recording",
