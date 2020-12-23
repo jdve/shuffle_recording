@@ -2,12 +2,10 @@ import files
 import ffmpeg
 import nre
 import os
-import osproc
 import random
 import sequtils
 import strformat
 import strutils
-import tempfile
 import terminal
 
 type Segment* = object
@@ -70,8 +68,7 @@ proc process(file: string, repeatTimes: int, silenceSecs: float): string =
   var segmentFiles: seq[string]
 
   for segment in segments:
-    var (fp, segmentFile) = mkstemp()
-    fp.close()
+    var segmentFile = getUniqueFile(dir, fmt"{name} ({index})", ext)
 
     styledEcho(fmt"  segment {index}: {segment.startTime:.2f}s - {segment.endTime:.2f}s")
 

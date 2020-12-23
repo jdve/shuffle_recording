@@ -10,17 +10,22 @@ rm -rf *.workflow
 cp -r ~/Library/Services/Shuffle\ Recording.workflow .
 
 FFMPEG=ffmpeg
-FFMPEG_FILE=ffmpeg-95111-g87ddf9f1ef.zip
-FFMPEG_URL=https://evermeet.cx/ffmpeg/$FFMPEG_FILE
+FFMPEG_ARCHIVE=ffmpeg.zip
+FFMPEG_URL=https://evermeet.cx/ffmpeg/getrelease/zip
 
 if [ ! -e "$FFMPEG" ]; then
-   curl $FFMPEG_URL --output $FFMPEG_FILE
-   unzip $FFMPEG_FILE
+   curl -L $FFMPEG_URL --output $FFMPEG_ARCHIVE
+   unzip $FFMPEG_ARCHIVE
+   rm $FFMPEG_ARCHIVE
 fi
 
-rm -rf Shuffle\ Recording.worflow/Contents/Resources
-mkdir -p Shuffle\ Recording.workflow/Contents/Resources
+RESOURCES=Shuffle\ Recording.workflow/Contents/Resources
 
-cp $FFMPEG Shuffle\ Recording.workflow/Contents/Resources
-cp shuffle_recording Shuffle\ Recording.workflow/Contents/Resources
+rm -rf "$RESOURCES"
+mkdir -p "$RESOURCES"
+
+cp $FFMPEG "$RESOURCES"
+chmod +x "$RESOURCES/$FFMPEG"
+
+cp shuffle_recording "$RESOURCES"
 
