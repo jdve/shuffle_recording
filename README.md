@@ -6,6 +6,11 @@ silence breaks, and then creates a new file with these segments reordered
 randomly.  In addition, it repeats all the segments multiple times to make a
 longer, more challenging recording.
 
+## Requirements
+
+- [ffmpeg](https://ffmpeg.org/) - best installed using `brew install ffmpeg`
+  ([brew](https://brew.sh/))
+
 ## Usage
 
 ### MacOS Finder
