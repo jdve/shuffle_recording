@@ -52,10 +52,30 @@ proc extractSegment(file: string, outputAudioFile: string, segment: Segment): st
 
 proc joinFiles(inputFiles: seq[string], outputFile: string): string =
   ## Concatenate a bunch of audio files together.
-  return ffmpeg(
-    "-i", "concat:" & join(inputFiles, "|"),
-    "-codec", "copy",
-    "-y", outputFile)
+  var args: seq[string]
+  var filter = ""
+  var i = 0
+
+  for f in inputFiles:
+    args.add("-i")
+    args.add(f)
+    filter.add(fmt"[{i}:a:0]")
+    i += 1
+
+  filter.add(fmt"concat=n={i}:v=0:a=1[outa]")
+
+  args.add("-filter_complex")
+  args.add(filter)
+  args.add("-map")
+  args.add("[outa]")
+  args.add("-map")
+  args.add("0:v:0")
+  args.add("-map_metadata")
+  args.add("0")
+  args.add("-y")
+  args.add(outputFile)
+
+  return ffmpeg(args)
 
 proc randomToMax(max: int): seq[int] =
   ## Return a list of numbers from 0 to max - 1 in random order.
