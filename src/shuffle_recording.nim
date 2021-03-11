@@ -1,6 +1,7 @@
 import files
 import ffmpeg
 import nre
+import options
 import os
 import random
 import sequtils
@@ -12,7 +13,7 @@ import std/exitprocs
 
 type Segment* = object
   startTime: float
-  endTime: float
+  endTime: Option[float]
 
 proc locateSegments(file: string, silenceSecs: float): seq[Segment] =
   ## Locate segments of audio separated by silence.
@@ -36,19 +37,29 @@ proc locateSegments(file: string, silenceSecs: float): seq[Segment] =
     let midpoint = startTime + (endTime - startTime) / 2
 
     if not isFirst:
-      result.add(Segment(startTime: lastMidpoint, endTime: midpoint))
+      result.add(Segment(startTime: lastMidpoint, endTime: some(midpoint)))
 
     lastMidpoint = midpoint
     isFirst = false
 
+  if not isFirst:
+    result.add(Segment(startTime: lastMidpoint))
+
 proc extractSegment(file: string, outputAudioFile: string, segment: Segment): string =
   ## Extract a segment out of an audio file.
-  return ffmpeg(
-    "-ss", $segment.startTime,
-    "-t", $(segment.endTime - segment.startTime),
-    "-i", file,
-    "-codec", "copy",
-    "-y", outputAudioFile)
+  if segment.endTime.isSome:
+    return ffmpeg(
+      "-ss", $segment.startTime,
+      "-t", $(segment.endTime.get() - segment.startTime),
+      "-i", file,
+      "-codec", "copy",
+      "-y", outputAudioFile)
+  else:
+    return ffmpeg(
+      "-ss", $segment.startTime,
+      "-i", file,
+      "-codec", "copy",
+      "-y", outputAudioFile)
 
 proc joinFiles(inputFiles: seq[string], outputFile: string): string =
   ## Concatenate a bunch of audio files together.
@@ -92,7 +103,10 @@ proc process(file: string, repeatTimes: int, silenceSecs: float): string =
   for segment in segments:
     var segmentFile = getUniqueFile(dir, fmt"{name} ({index})", ext)
 
-    styledEcho(fmt"  segment {index}: {segment.startTime:.2f}s - {segment.endTime:.2f}s")
+    if segment.endTime.isSome:
+      styledEcho(fmt"  segment {index}: {segment.startTime:.2f}s - {segment.endTime.get():.2f}s")
+    else:
+      styledEcho(fmt"  segment {index}: {segment.startTime:.2f}s - end")
 
     discard extractSegment(file, segmentFile, segment)
 
