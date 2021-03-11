@@ -28,22 +28,18 @@ proc locateSegments(file: string, silenceSecs: float): seq[Segment] =
 
   let pattern = re"(?s)silence_start: ([\d.]+).*?silence_end: ([\d.]+)"
 
-  var lastMidpoint: float
-  var isFirst = true
+  var lastMidpoint: float = 0.0
 
   for match in output.findIter(pattern):
     let startTime = parseFloat(match.captures[0])
     let endTime = parseFloat(match.captures[1])
     let midpoint = startTime + (endTime - startTime) / 2
 
-    if not isFirst:
-      result.add(Segment(startTime: lastMidpoint, endTime: some(midpoint)))
+    result.add(Segment(startTime: lastMidpoint, endTime: some(midpoint)))
 
     lastMidpoint = midpoint
-    isFirst = false
 
-  if not isFirst:
-    result.add(Segment(startTime: lastMidpoint))
+  result.add(Segment(startTime: lastMidpoint))
 
 proc extractSegment(file: string, outputAudioFile: string, segment: Segment): string =
   ## Extract a segment out of an audio file.
