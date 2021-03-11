@@ -76,7 +76,7 @@ proc joinFiles(inputFiles: seq[string], outputFile: string): string =
   args.add("-map")
   args.add("[outa]")
   args.add("-map")
-  args.add("0:v:0")
+  args.add("0:v:0?")
   args.add("-map_metadata")
   args.add("0")
   args.add("-y")
