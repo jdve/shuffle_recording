@@ -60,7 +60,7 @@ proc extractSegment(file: string, outputAudioFile: string, segment: Segment): st
 proc joinFiles(inputFiles: seq[string], outputFile: string): string =
   ## Concatenate a bunch of audio files together.
   var args: seq[string]
-  var filter = ""
+  var filter = "aevalsrc=exprs=0:d=1s[silence1], aevalsrc=exprs=0:d=1s[silence2], [silence1]"
   var i = 0
 
   for f in inputFiles:
@@ -69,7 +69,7 @@ proc joinFiles(inputFiles: seq[string], outputFile: string): string =
     filter.add(fmt"[{i}:a:0]")
     i += 1
 
-  filter.add(fmt"concat=n={i}:v=0:a=1[outa]")
+  filter.add(fmt"[silence2] concat=n={i+2}:v=0:a=1[outa]")
 
   args.add("-filter_complex")
   args.add(filter)
